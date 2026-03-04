@@ -62,7 +62,7 @@ const authValidation = {
             .bail(),
 
         body("institute_id")
-            .notEmpty().withMessage('Institute is required')
+            .optional()
             .isMongoId().withMessage('Institute must be a valid Mongo ID')
             .custom(async (value) => {
                 const institute = await Institute.findById(value);
@@ -73,7 +73,7 @@ const authValidation = {
             }),
 
         body("college_id")
-            .notEmpty().withMessage('College is required')
+            .optional()
             .isMongoId().withMessage('College must be a valid Mongo ID')
             .custom(async (value) => {
                 const college = await College.findById(value);
@@ -84,7 +84,7 @@ const authValidation = {
             }),
 
         body("department_id")
-            .notEmpty().withMessage('Department is required')
+            .optional()
             .isMongoId().withMessage('Department must be a valid Mongo ID')
             .custom(async (value) => {
                 const department = await Department.findById(value);

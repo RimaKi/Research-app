@@ -66,7 +66,7 @@ const ResearcherValidation = {
             .bail(),
 
         body("institute_id")
-            .notEmpty().withMessage('Institute is required')
+            .optional()
             .isMongoId().withMessage('Institute must be a valid Mongo ID')
             .custom(async (value) => {
                 const institute = await Institute.findById(value);
@@ -77,7 +77,7 @@ const ResearcherValidation = {
             }),
 
         body("college_id")
-            .notEmpty().withMessage('College is required')
+            .optional()
             .isMongoId().withMessage('College must be a valid Mongo ID')
             .custom(async (value) => {
                 const college = await College.findById(value);
@@ -88,7 +88,7 @@ const ResearcherValidation = {
             }),
 
         body("department_id")
-            .notEmpty().withMessage('Department is required')
+            .optional()
             .isMongoId().withMessage('Department must be a valid Mongo ID')
             .custom(async (value) => {
                 const department = await Department.findById(value);
@@ -154,16 +154,19 @@ const ResearcherValidation = {
             .withMessage("Invalid Researcher ID format"),
 
         body("first_name")
+            .optional({nullable:true})
             .isLength({min: 2, max: 50})
             .withMessage("Name must be between 2 and 50 characters")
             .bail(),
 
         body("last_name")
+            .optional({nullable:true})
             .isLength({min: 2, max: 50})
             .withMessage("Name must be between 2 and 50 characters")
             .bail(),
 
         body("email")
+            .optional({nullable:true})
             .isEmail().withMessage("Invalid email format")
             .normalizeEmail()
             .custom(async (email) => {
@@ -176,14 +179,14 @@ const ResearcherValidation = {
             .bail(),
 
         body("phone")
-            .notEmpty().withMessage("Phone number is required")
+            .optional({nullable:true})
             .isMobilePhone("any")
             .matches(/^[+]?[(]?[0-9]{1,4}[)]?[-\s./0-9]*$/).withMessage("Invalid phone number")
             .trim()
             .bail(),
 
         body("institute_id")
-            .notEmpty().withMessage('Institute is required')
+            .optional({nullable:true})
             .isMongoId().withMessage('Institute must be a valid Mongo ID')
             .custom(async (value) => {
                 const institute = await Institute.findById(value);
@@ -194,7 +197,7 @@ const ResearcherValidation = {
             }),
 
         body("college_id")
-            .notEmpty().withMessage('College is required')
+            .optional({nullable:true})
             .isMongoId().withMessage('College must be a valid Mongo ID')
             .custom(async (value) => {
                 const college = await College.findById(value);
@@ -205,7 +208,7 @@ const ResearcherValidation = {
             }),
 
         body("department_id")
-            .notEmpty().withMessage('Department is required')
+            .optional({nullable:true})
             .isMongoId().withMessage('Department must be a valid Mongo ID')
             .custom(async (value) => {
                 const department = await Department.findById(value);
@@ -271,11 +274,6 @@ const ResearcherValidation = {
             .withMessage("Invalid ID format")
     ],
 
-    deleteResearcher: [
-        param("id")
-            .custom((value) => mongoose.Types.ObjectId.isValid(value))
-            .withMessage("Invalid ID format"),
-    ]
 }
 
 

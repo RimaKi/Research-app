@@ -5,6 +5,7 @@ const researcherSchema = new mongoose.Schema(
         user_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            required: true
         },
         orcid_id: {
             type: String,
@@ -37,12 +38,24 @@ const researcherSchema = new mongoose.Schema(
             min: 0,
             default: 0
         },
-
+        is_active:{
+            type:Boolean,
+            default: true
+        }
     },
     {
         timestamps: true,
     }
 );
+
+researcherSchema.set('toJSON', {
+    virtuals: true,
+    transform: function (doc, ret) {
+        delete ret.is_active;
+        delete ret.__v;
+        return ret;
+    }
+});
 
 const Researcher = mongoose.model("Researcher", researcherSchema);
 

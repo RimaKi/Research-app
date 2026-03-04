@@ -9,12 +9,11 @@ const validate = require("../middlewares/validate.middleware");
 const {
     createResearcher,
     updateResearcher,
-    getResearcherById,
-    deleteResearcher
+    getResearcherById
 } = require("../validations/researcher.validation");
 
 
-router.use(requireAuth);
+// router.use(requireAuth);
 
 router.post("/",
     [
@@ -24,5 +23,41 @@ router.post("/",
     ],
     asyncHandler(ResearcherController.create));
 
+router.put("/:id",
+    [
+        requireAuth,
+        authorize("admin"),
+        [...updateResearcher, validate]
+    ],
+    asyncHandler(ResearcherController.update));
+
+router.put("/:id",
+    [
+        requireAuth,
+        authorize("admin"),
+        [...updateResearcher, validate]
+    ],
+    asyncHandler(ResearcherController.update));
+
+router.delete("/:id",
+    [
+        requireAuth,
+        authorize("admin"),
+        [...getResearcherById, validate]
+    ],
+    asyncHandler(ResearcherController.delete));
+
+router.get("/:id",
+    [
+        requireAuth,
+        [...getResearcherById, validate]
+    ],
+    asyncHandler(ResearcherController.getById));
+
+router.get("/",
+    [
+        requireAuth
+    ],
+    asyncHandler(ResearcherController.getAll));
 
 module.exports = router;

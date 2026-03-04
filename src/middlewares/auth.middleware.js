@@ -7,12 +7,12 @@ const requireAuth = async (req, res, next) => {
     try {
         // get token from request (access)
         const authHeader = req.headers.authorization;
-        const token = authHeader.split(" ")[1];
 
-
-        if (!authHeader || !authHeader.startsWith("Bearer " || !token)) {
+        if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return res.status(401).json(collection(false, "Authentication token missing", null, "UNAUTHORIZED"));
         }
+        const token = authHeader.split(" ")[1];
+
 
         // verify the token (age, valid)
         const decoded = tokenService.verifyAccessToken(token)
