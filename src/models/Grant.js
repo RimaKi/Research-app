@@ -67,11 +67,10 @@ const grantSchema = new mongoose.Schema(
     }
 );
 // Date validation
-grantSchema.pre('validate', function(next) {
+grantSchema.pre('validate', function () {
     if (this.end_date <= this.start_date) {
-        next(new Error('End date must be after start date'));
+        throw new Error('End date must be after start date');
     }
-    next();
 });
 
 

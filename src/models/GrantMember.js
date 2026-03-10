@@ -28,6 +28,6 @@ grantMemberSchema.index(
     { unique: true }
 );
 
-const GrantMember = mongoose.model("GrantMember", grantMemberSchema);
+const GrantMember = mongoose.model("Grant_member", grantMemberSchema);
 
 module.exports = GrantMember;

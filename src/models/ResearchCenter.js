@@ -20,6 +20,6 @@ const researchCenterSchema = new mongoose.Schema(
     }
 );
 
-const ResearchCenter = mongoose.model("ResearchCenter", researchCenterSchema);
+const ResearchCenter = mongoose.model("Research_Center", researchCenterSchema);
 
 module.exports = ResearchCenter;

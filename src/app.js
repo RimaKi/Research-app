@@ -12,8 +12,8 @@ app.use(express.json());
 
 /** start routes **/
 app.use("/api/auth", require("./routes/auth.routes"));
-
 app.use("/api/researcher", require("./routes/researcher.routes"));
+app.use("/api/grants", require("./routes/grant.routes"));
 
 /** end routes **/
 

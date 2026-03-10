@@ -4,6 +4,7 @@ const connectDB = require("../utils/connectDB");
 const Institute = require("../models/Institute");
 const College = require("../models/College");
 const Department = require("../models/Department");
+const ResearchCenter = require("../models/ResearchCenter");
 const createInstitute = async () => {
     try {
         await connectDB();
@@ -11,10 +12,14 @@ const createInstitute = async () => {
         await Department.deleteMany({});
         await College.deleteMany({});
         await Institute.deleteMany({});
+        await ResearchCenter.deleteMany({});
 
         const institutesData = [
             {
                 institute_name: "Institute of Medical and Health Sciences",
+                research_center: {
+                    research_center_name: "Medical Research Center"
+                },
                 colleges: [
                     {
                         college_name: "College of Medicine",
@@ -37,6 +42,9 @@ const createInstitute = async () => {
             {
 
                 institute_name: "Institute of Engineering and Technology",
+                research_center: {
+                    research_center_name: "Engineering Innovation Center"
+                },
                 colleges: [
                     {
                         college_name: "College of Engineering",
@@ -58,6 +66,9 @@ const createInstitute = async () => {
             },
             {
                 institute_name: "Institute of Business and Law",
+                research_center: {
+                    research_center_name: "Business and Legal Studies Center"
+                },
                 colleges: [
                     {
                         college_name: "College of Business Administration",
@@ -79,6 +90,9 @@ const createInstitute = async () => {
             },
             {
                 institute_name: "Institute of Arts and Humanities",
+                research_center: {
+                    research_center_name: "Cultural and Social Research Center"
+                },
                 colleges: [
                     {
                         college_name: "College of Arts, Humanities and Social Sciences",
@@ -106,18 +120,23 @@ const createInstitute = async () => {
                 institute_name: instituteItem.institute_name
             })
 
+            await ResearchCenter.create({
+                research_center_name: instituteItem.research_center.research_center_name,
+                institute_id: createdInstitute._id,
+            });
+
             for (const collegeItem of instituteItem.colleges) {
                 const createdCollege = await College.create({
                     college_name: collegeItem.college_name,
                     institute_id: createdInstitute._id
                 });
 
-                for (const departmentItem of collegeItem.departments) {
-                    const createdDepartment = await Department.create({
-                        department_name: departmentItem.department_name,
-                        college_id: createdCollege._id
-                    })
-                }
+                const departmentsWithCollegeId = collegeItem.departments.map(dep => ({
+                    department_name: dep.department_name,
+                    college_id: createdCollege._id,
+                }));
+
+                await Department.insertMany(departmentsWithCollegeId);
             }
         }
         console.log("✅ Data Seeded Successfully");
