@@ -14,7 +14,7 @@ app.use(express.json());
 app.use("/api/auth", require("./routes/auth.routes"));
 app.use("/api/researcher", require("./routes/researcher.routes"));
 app.use("/api/grants", require("./routes/grant.routes"));
-
+app.use("/api", require("./routes/institute.routes"));
 /** end routes **/
 
 // Error Middleware
