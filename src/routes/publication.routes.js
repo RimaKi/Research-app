@@ -14,6 +14,16 @@ const {
 } = require("../validations/publication.validation");
 
 
+router.get(
+    "/",
+    asyncHandler(PublicationController.getAll)
+);
+
+router.get(
+    "/:id",
+    asyncHandler(PublicationController.getById)
+);
+
 router.post(
     "/",
     [

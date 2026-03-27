@@ -13,14 +13,38 @@ class PublicationController {
          );
      */
     async getAll(req, res) {
-        // TODO: Implement get all logic
-        res.json({success: true, data: []});
+        const {year, type} = req.body;
+        let filter = {status: 'published'}; // Only return published publications by default
+        if (year) {
+            filter.publication_year = year;
+        }
+        if (type) {
+            filter.type = type;
+        }
+        const publications = await Publication.find(filter);
+        res.status(200).json(collection(true, "Successfully completed", publications, "SUCCESS"));
     }
 
     async getById(req, res) {
         const {id} = req.params;
-        // TODO: Implement get by ID logic
-        res.json({success: true, data: {id}});
+        const publicationDoc = await Publication.findById(id)
+        .populate({
+            path: 'authors',
+            populate: {
+            path: 'user_id',
+            select: 'first_name last_name email',
+            },
+        })
+        .populate('grant_id', 'title');
+
+        if (!publicationDoc) {
+            return res.status(404).json(
+                collection(false, "Publication not found", null, "NOT_FOUND")
+            );
+        }
+
+        const publication = publicationDoc.toJSON({req});
+        res.status(200).json(collection(true, "Successfully completed", publication, "SUCCESS"));
     }
 
     async create(req, res) {
@@ -117,7 +141,7 @@ class PublicationController {
             collection(
                 true,
                 'updated Publication Successfully',
-                updatedPublication, //.populate('authors', 'name email').populate('grant_id', 'title').toJSON({ req }),
+                updatedPublication,
                 'SUCCESS'
             )
         );
@@ -125,6 +149,15 @@ class PublicationController {
 
     async delete(req, res) {
         const {id} = req.params;
+        const publication = req.publication;
+
+        if (publication.pdf_url) {
+                const oldPath = path.join(process.cwd(), 'src', publication.pdf_url);
+                if (fs.existsSync(oldPath)) {
+                    fs.unlinkSync(oldPath); // delete old file
+                }
+            }
+
         await Publication.findByIdAndDelete(id);
 
         res.status(200).json(
