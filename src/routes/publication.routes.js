@@ -57,5 +57,13 @@ router.delete(
     asyncHandler(PublicationController.delete)
 );
 
+router.patch(
+    "/:id/status", [
+        requireAuth,
+        authorize("researcher","admin"),
+        checkPublicationAccess
+    ],
+    asyncHandler(PublicationController.changeStatus)
+);
 
 module.exports = router;

@@ -5,13 +5,6 @@ const fs = require('fs');
 
 class PublicationController {
 
-    /*
-         const publication = await Publication.findById(id);
-
-         res.json(
-             publication.toJSON({ req })
-         );
-     */
     async getAll(req, res) {
         const {year, type} = req.body;
         let filter = {status: 'published'}; // Only return published publications by default
@@ -165,6 +158,27 @@ class PublicationController {
                 true,
                 'deleted Successfully',
                 null,
+                'SUCCESS'
+            )
+        );
+    }
+
+
+    async changeStatus(req, res) {
+        const {id} = req.params;
+        const {status} = req.body;
+
+        const publication = await Publication.findByIdAndUpdate(
+            id,
+            {status},
+            {new: true}
+        );
+
+        res.status(200).json(
+            collection(
+                true,
+                'updated Publication Status Successfully',
+                publication,
                 'SUCCESS'
             )
         );
