@@ -60,7 +60,7 @@ const publicationSchema = new mongoose.Schema(
         pdf_url: {
             type: String,
             trim: true,
-            match: [/^https?:\/\/.+/, 'Invalid URL']
+            match: [/^(https?:\/\/.+|uploads\/.+)$/, 'Invalid PDF path']
         },
 
         status: {
@@ -85,8 +85,26 @@ const publicationSchema = new mongoose.Schema(
     },
     {
         timestamps: true,
+        toJSON: { virtuals: true },
+        toObject: { virtuals: true }
     }
 );
+
+publicationSchema.set('toJSON', {
+    virtuals: true,
+    transform: function (doc, ret, options) {
+
+        if (
+            options?.req &&
+            ret.pdf_url && 
+            ret.pdf_url.trim() !== ''
+        ) {
+            ret.full_PDF_URL = `${options.req.protocol}://${options.req.get('host')}/${ret.pdf_url}`;
+        }
+
+        return ret;
+    }
+});
 
 const Publication = mongoose.model("Publication", publicationSchema);
 
