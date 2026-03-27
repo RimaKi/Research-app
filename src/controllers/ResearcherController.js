@@ -1,8 +1,12 @@
 const Researcher = require("../models/Researcher");
 const User = require("../models/User");
+const Publication = require("../models/Publication");
+const GrantMember = require("../models/GrantMember");
 
 const passwordService = require('../utils/passwordService');
 const collection = require("../utils/collection");
+const mongoose = require("mongoose");
+
 
 class ResearcherController {
     async create(req, res, next) {
@@ -118,24 +122,53 @@ class ResearcherController {
         const existingResearcher = await Researcher.findOne({_id: id, is_active: true})
             .populate({
                 path: 'user_id',
-                populate: [{
-                    path: 'institute_id',
-                    select: 'institute_name',
-                }, {
-                    path: 'college_id',
-                    select: 'college_name',
-                }, {
-                    path: 'department_id',
-                    select: 'department_name'
-                }]
+                populate: [
+                    { path: 'institute_id',select: 'institute_name'},
+                    { path: 'college_id',select: 'college_name'}, 
+                    {path: 'department_id',select: 'department_name'}
+                ]
             });
         if (!existingResearcher) {
             const error = new Error("Researcher not found");
             error.statusCode = 404;
             return next(error);
         }
-        res.status(200).json(collection(true, "Successfully completed", existingResearcher, "SUCCESS"));
 
+
+        // Publications
+        const publications = await Publication.find({
+            authors: id
+        });
+
+        // Grants + role
+        const grantMemberships = await GrantMember.aggregate([
+            {
+                $match: { researcher_id: new mongoose.Types.ObjectId(id) }
+            },
+            {
+                $lookup: {
+                    from: 'grants',
+                    localField: 'grant_id',
+                    foreignField: '_id',
+                    as: 'grant'
+                }
+            },
+            { $unwind: '$grant' },
+            {
+                $match: { 'grant.status': "available" }
+            }
+        ]);
+
+        // Attach to response
+        const responseData = {
+            ...existingResearcher.toObject(),
+            publications,
+            grants: grantMemberships
+        };
+
+        res.status(200).json(
+            collection(true, "Successfully completed", responseData, "SUCCESS")
+        );
     }
 
     async getAll(req, res) {

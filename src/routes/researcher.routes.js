@@ -31,14 +31,6 @@ router.put("/:id",
     ],
     asyncHandler(ResearcherController.update));
 
-router.put("/:id",
-    [
-        requireAuth,
-        authorize("admin"),
-        [...updateResearcher, validate]
-    ],
-    asyncHandler(ResearcherController.update));
-
 router.delete("/:id",
     [
         requireAuth,
